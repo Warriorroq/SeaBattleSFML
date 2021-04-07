@@ -13,16 +13,26 @@ namespace Project
         }
         public void CreateCells()
         {
+            DestroyCells();
             for (int y = 0; y < 6; y++)
             {
                 for (int x = 0; x < 6; x++)
                 {
-                    var cell = new Cell(new Vector2f(y * 70, x * 70), new Vector2f(70, 70));
+                    var cell = new Cell(new Vector2f(350 + x * 70, 35 + y * 70), new Vector2f(70, 70));
                     cell.OnClicked += UseCell;
                     cells[y, x] = cell;
                 }
             }
             IsActive = true;
+        }
+        public override void Destroy()
+        {
+            DestroyCells();
+        }
+        private void DestroyCells()
+        {
+            foreach (var cell in cells)
+                cell?.Destroy();
         }
         public override void Draw()
         {

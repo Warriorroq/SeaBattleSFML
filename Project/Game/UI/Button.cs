@@ -48,7 +48,7 @@ namespace Project
             WindowParams.renderWindow.Draw(shape);
             WindowParams.renderWindow.Draw(text);
         }
-        public override void Dispose()
+        public override void Destroy()
         {
             WindowParams.renderWindow.MouseButtonPressed -= GlobalClick;
             WindowParams.renderWindow.MouseButtonReleased -= GlobalRelease;

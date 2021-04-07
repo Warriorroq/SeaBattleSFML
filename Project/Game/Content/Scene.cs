@@ -20,8 +20,7 @@ namespace Project
         public void TurnScene(bool active)
         {
             IsActive = active;
-            foreach (var gObject in objects)
-                gObject.IsActive = IsActive;
+            objects.ForEach(x => x.IsActive = IsActive);
         }
         public void Add(GameObject obj)
         {
@@ -34,11 +33,10 @@ namespace Project
         private void RemoveObjects()
         {
             removeObjects.ForEach(x => objects.Remove(x));
-            foreach(var obj in removeObjects)
-                obj.Dispose();
-            removeObjects = new List<GameObject>();
+            removeObjects.ForEach(x => x.Destroy());
+            removeObjects.Clear();
         }
-        public void DisposeAll<T>() where T : GameObject
+        public void Destroy<T>() where T : GameObject
         {
             foreach (var gObject in objects)
                 if (gObject.GetType() == typeof(T))
@@ -46,9 +44,9 @@ namespace Project
         }
         private IEnumerable<GameObject> Sort()
             => objects.Where(x => !(x is null)).OrderByDescending(x => -x.drawLayer);
-        public override void Dispose()
+        public override void Destroy()
         {
-            objects.ForEach(x => x.Dispose());
+            objects.ForEach(x => x.Destroy());
         }
     }
 }

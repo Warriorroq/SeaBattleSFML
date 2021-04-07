@@ -21,7 +21,7 @@ namespace Project
         }
         public override void Init()
         {
-            scene = SceneFabric.CreateStartScene();
+            MainMenu();
         }
         public override void Update()
         {
@@ -30,17 +30,23 @@ namespace Project
         public override void Draw()
         {
             scene?.Draw();
+            ShowFPS();
+        }
+        public void MainMenu()
+        {
+            scene?.Destroy();
+            scene = Scenes.CreateStartScene();
         }
         public void StartServer()
         {
             
-            scene.Dispose();
-            scene = SceneFabric.CreateMapScene();
+            scene?.Destroy();
+            scene = Scenes.CreateServerLobby();
         }
         public void Connect()
         {
-            scene.Dispose();
-            scene = SceneFabric.CreateMapScene();
+            scene?.Destroy();
+            scene = Scenes.CreateConnectionLobby();
         }
         private void ShowFPS()
             => Debug($"FPS: {(1 / Time.deltaTime):0.0}");

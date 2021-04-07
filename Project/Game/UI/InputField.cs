@@ -10,9 +10,10 @@ namespace Project
         public string Text 
             => text.DisplayedString;
         private Text text = null;
+        private int maxLenght = 0;
         private Shape shape = null;
         private bool InputInformation = false;
-        public InputField(Vector2f position, Vector2f size, string startText)
+        public InputField(Vector2f position, Vector2f size, int maxLenght, string startText)
         {
             shape = new RectangleShape(size)
             {
@@ -28,6 +29,8 @@ namespace Project
                 Color = Color.Black,
                 CharacterSize = 20
             };
+
+            this.maxLenght = maxLenght;
             WindowParams.renderWindow.MouseButtonPressed += GlobalClick;
             WindowParams.renderWindow.KeyPressed += OnKeyPressed;
         }
@@ -55,7 +58,7 @@ namespace Project
                 InputInformation = false;
                 return;
             }
-            if(key != Keyboard.Key.BackSlash)
+            if(key != Keyboard.Key.BackSpace && text.DisplayedString.Length <= maxLenght)
                 text.DisplayedString += key.ToString();
         }
         private void GlobalClick(object sender, MouseButtonEventArgs e)
@@ -68,7 +71,7 @@ namespace Project
                 InputInformation = true;
             }
         }
-        public override void Dispose()
+        public override void Destroy()
         {
             WindowParams.renderWindow.MouseButtonPressed -= GlobalClick;
             WindowParams.renderWindow.KeyPressed -= OnKeyPressed;

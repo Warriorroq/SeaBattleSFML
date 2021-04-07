@@ -4,12 +4,12 @@ using System.Text;
 
 namespace Project
 {
-    public class GameObject : IDrawable, IDisposable
+    public class GameObject
     {
         public int drawLayer = 0;
         public bool IsActive = true;
 
-        public virtual void Dispose()
+        public virtual void Destroy()
         {
 
         }
