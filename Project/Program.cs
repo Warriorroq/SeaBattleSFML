@@ -4,7 +4,11 @@ namespace Project
 {
     class Program
     {
-        static void Main(string[] args)
-            =>new Game().Run();
+        public static Game game = null;
+        public static void Main(string[] args)
+        {
+            game = new Game();
+            game.Run();
+        }
     }
 }

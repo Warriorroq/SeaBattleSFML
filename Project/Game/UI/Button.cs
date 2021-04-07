@@ -3,7 +3,7 @@ using SFML.System;
 using SFML.Window;
 namespace Project
 {
-    public class Button : IDrawable
+    public class Button : GameObject
     {
         public Text text = null;
         public bool Clicked = false;
@@ -33,9 +33,9 @@ namespace Project
         private void GlobalClick(object sender, MouseButtonEventArgs e)
         {
             Vector2f mappedpos = WindowParams.renderWindow.MapPixelToCoords(new Vector2i(e.X, e.Y));
-            if (shape.GetGlobalBounds().Contains(mappedpos.X, mappedpos.Y))
+            if (shape.GetGlobalBounds().Contains(mappedpos.X, mappedpos.Y) && IsActive)
             {
-                OnClicked.Invoke();
+                OnClicked?.Invoke();
                 Clicked = true;
             }
         }
@@ -43,11 +43,15 @@ namespace Project
         {
             Clicked = false;
         }
-        public virtual void Draw()
+        public override void Draw()
         {
             WindowParams.renderWindow.Draw(shape);
             WindowParams.renderWindow.Draw(text);
         }
-        
+        public override void Dispose()
+        {
+            WindowParams.renderWindow.MouseButtonPressed -= GlobalClick;
+            WindowParams.renderWindow.MouseButtonReleased -= GlobalRelease;
+        }
     }
 }

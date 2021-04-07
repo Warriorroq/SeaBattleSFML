@@ -5,14 +5,14 @@ using System;
 
 namespace Project
 {
-    public class InputField : IDrawable
+    public class InputField : GameObject
     {
         public string Text 
             => text.DisplayedString;
         private Text text = null;
         private Shape shape = null;
         private bool InputInformation = false;
-        public InputField(Vector2f position, Vector2f size)
+        public InputField(Vector2f position, Vector2f size, string startText)
         {
             shape = new RectangleShape(size)
             {
@@ -22,7 +22,7 @@ namespace Project
                 OutlineColor = Color.Black
             };
 
-            this.text = new Text("", new Font(Fonts.CARTOONIST))
+            this.text = new Text(startText, new Font(Fonts.CARTOONIST))
             {
                 Position = shape.Position,
                 Color = Color.Black,
@@ -31,7 +31,7 @@ namespace Project
             WindowParams.renderWindow.MouseButtonPressed += GlobalClick;
             WindowParams.renderWindow.KeyPressed += OnKeyPressed;
         }
-        public void Draw()
+        public override void Draw()
         {
             WindowParams.renderWindow.Draw(shape);
             WindowParams.renderWindow.Draw(text);
@@ -62,11 +62,16 @@ namespace Project
         {
             InputInformation = false;
             Vector2f mappedpos = WindowParams.renderWindow.MapPixelToCoords(new Vector2i(e.X, e.Y));
-            if (shape.GetGlobalBounds().Contains(mappedpos.X, mappedpos.Y))
+            if (shape.GetGlobalBounds().Contains(mappedpos.X, mappedpos.Y) && IsActive)
             {
                 text.DisplayedString = "";
                 InputInformation = true;
             }
+        }
+        public override void Dispose()
+        {
+            WindowParams.renderWindow.MouseButtonPressed -= GlobalClick;
+            WindowParams.renderWindow.KeyPressed -= OnKeyPressed;
         }
     }
 }
