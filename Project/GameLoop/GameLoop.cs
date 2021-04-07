@@ -9,13 +9,14 @@ namespace Project
         public const int FPS = 144;
         public const float updateTime = 1f / FPS;
 
-        protected GameLoop(uint widthOfTheWindow, uint heightOfTheWindow, string nameOfTheWindow)
+        protected GameLoop(string nameOfTheWindow)
         {
-            var window = new RenderWindow(new VideoMode(widthOfTheWindow, heightOfTheWindow), nameOfTheWindow);
+            var window = new RenderWindow(new VideoMode(WindowParams.widthWindow, WindowParams.heightWindow), nameOfTheWindow);
             window.Closed += WindowClosed;
-
+            Console.Clear();
             Time.SetTimer(new GameTime());
             WindowParams.renderWindow = window;
+            Console.WriteLine("Working...");
         }
         public void Run()
         {
