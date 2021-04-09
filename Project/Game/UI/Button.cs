@@ -52,6 +52,7 @@ namespace Project
         {
             WindowParams.renderWindow.MouseButtonPressed -= GlobalClick;
             WindowParams.renderWindow.MouseButtonReleased -= GlobalRelease;
+            OnClicked = null;
         }
     }
 }

@@ -20,23 +20,39 @@ namespace Project
             button.OnClicked += Program.game.Connect;
             button.OnClicked += scene.Destroy<Button>;
             scene.Add(button);
+            var input = new InputField(new Vector2f(500, 400), new Vector2f(160, 30), 14, $"NickName {Game.random.Next(0, 100)}");
+            input.OnEndWrite += Program.lobby.mainSocket.SetNickName;
+            scene.Add(input);
 
-            scene.Add(new InputField(new Vector2f(500, 400), new Vector2f(160, 30), 14, $"NickName {Game.random.Next(0,100)}"));
             return scene;
         }
         public static Scene CreateConnectionLobby()
         {
             var scene = CreateMapCastScene();
             var button = new Button(new Vector2f(WindowParams.widthWindow - 260, WindowParams.heightWindow - 80), new Vector2f(180, 40), "Connect server");
+            button.OnClicked += Program.lobby.SetUpConnection;
+            button.OnClicked += scene.Find<Map>().Move;
+            button.OnClicked += scene.Find<Chat>().UpdateActive;
             button.OnClicked += scene.Destroy<Button>;
+            button.OnClicked += (() => scene.Add(new InputField(new Vector2f(WindowParams.widthWindow - 470, 500), new Vector2f(400, 30), 35, $"message: ")));
+            button.OnClicked += (() => scene.Find<InputField>().OnEndWrite += Program.game.UseChat);
             scene.Add(button);
             return scene;
+        }
+        public static void CreateChat()
+        {
+
         }
         public static Scene CreateServerLobby()
         {
             var scene = CreateMapCastScene();
             var button = new Button(new Vector2f(WindowParams.widthWindow - 240, WindowParams.heightWindow - 80), new Vector2f(160, 40), "Create server");
+            button.OnClicked += Program.lobby.SetUpServer;
+            button.OnClicked += scene.Find<Chat>().UpdateActive;
+            button.OnClicked += scene.Find<Map>().Move;
             button.OnClicked += scene.Destroy<Button>;
+            button.OnClicked += (() => scene.Add(new InputField(new Vector2f(WindowParams.widthWindow - 470, 500), new Vector2f(400, 30), 35, $"message: ")));
+            button.OnClicked += (() => scene.Find<InputField>().OnEndWrite += Program.game.UseChat);
             scene.Add(button);
             return scene;
         }
@@ -45,7 +61,7 @@ namespace Project
             var scene = new Scene();
             scene.Add(new Image(new Vector2f(0, 0), new Vector2f(WindowParams.widthWindow, WindowParams.heightWindow), GameTextures.bg3));
 
-            var map = new Map();
+            var map = new Map(30);
 
             var button = new Button(new Vector2f(500, 500), new Vector2f(150, 60), "Create auto");
             button.OnClicked += map.CreateCells;
@@ -55,7 +71,7 @@ namespace Project
             button = new Button(new Vector2f(80, WindowParams.heightWindow - 80), new Vector2f(120, 40), "main menu");
             button.OnClicked += scene.Destroy<Button>;
             button.OnClicked += Program.game.MainMenu;
-
+            scene.Add(new Chat(new Vector2f(WindowParams.widthWindow - 470, 70)) { IsActive = false});
             scene.Add(button);
             scene.Add(map);
             return scene;

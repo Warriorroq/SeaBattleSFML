@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -23,9 +24,17 @@ namespace Project
         {
             MainMenu();
         }
-        public override void Update()
+        public override async void Update()
         {
-            
+            await Task.Run(() => Program.lobby.UpdateConnection());
+        }
+        public void UseChat(InputField field)
+        {
+            Program.lobby.Send($"{Program.lobby.mainSocket.nikName}: {field.Text}");
+        }
+        public void UseChat(string field)
+        {
+            Program.lobby.Send($"{field}");
         }
         public override void Draw()
         {
@@ -37,9 +46,12 @@ namespace Project
             scene?.Destroy();
             scene = Scenes.CreateStartScene();
         }
+        public void SendToChat(string message)
+        {
+            scene.Find<Chat>().AddMessage(message);
+        }
         public void StartServer()
         {
-            
             scene?.Destroy();
             scene = Scenes.CreateServerLobby();
         }

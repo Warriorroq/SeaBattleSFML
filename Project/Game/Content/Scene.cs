@@ -42,6 +42,13 @@ namespace Project
                 if (gObject.GetType() == typeof(T))
                     removeObjects.Add(gObject);
         }
+        public T Find<T>() where T : GameObject
+        {
+            foreach (GameObject gObject in objects)
+                if (gObject.GetType() == typeof(T))
+                    return (T)gObject;
+            return null;
+        }
         private IEnumerable<GameObject> Sort()
             => objects.Where(x => !(x is null)).OrderByDescending(x => -x.drawLayer);
         public override void Destroy()

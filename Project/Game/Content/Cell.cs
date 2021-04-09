@@ -25,11 +25,15 @@ namespace Project
             get
                 => shape.Position;
         }
+        public Shape GetShape {
+            get 
+                => shape;
+        }
 
-        public Cell(Vector2f position, Vector2f size)
+        public Cell(Vector2f position, Vector2f size, int chance)
         {
             drawLayer = 4;
-            if (Game.random.Next(0, 100) < 30)
+            if (Game.random.Next(0, 100) < chance)
                 currentType = celltype.ship;
             shape = new RectangleShape(size)
             {
@@ -41,13 +45,12 @@ namespace Project
             shape.Texture = currentType == celltype.water ? null : GameTextures.ship;
             WindowParams.renderWindow.MouseButtonPressed += GlobalClick;
         }
-
         public void SetShape(Shape shape)
             => this.shape = shape;
         private void GlobalClick(object sender, MouseButtonEventArgs e)
         {
             Vector2f mappedpos = WindowParams.renderWindow.MapPixelToCoords(new Vector2i(e.X, e.Y));
-            if (shape.GetGlobalBounds().Contains(mappedpos.X, mappedpos.Y))
+            if (shape.GetGlobalBounds().Contains(mappedpos.X, mappedpos.Y) && IsActive)
                 OnClicked?.Invoke(this);
         }
         public override void Draw()
@@ -55,6 +58,7 @@ namespace Project
         public override void Destroy()
         {
             WindowParams.renderWindow.MouseButtonPressed -= GlobalClick;
+            OnClicked = null;
         }
     }
 }

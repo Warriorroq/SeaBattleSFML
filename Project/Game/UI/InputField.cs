@@ -13,6 +13,8 @@ namespace Project
         private int maxLenght = 0;
         private Shape shape = null;
         private bool InputInformation = false;
+        public event OnClick OnEndWrite;
+        public delegate void OnClick(InputField str);
         public InputField(Vector2f position, Vector2f size, int maxLenght, string startText)
         {
             shape = new RectangleShape(size)
@@ -41,11 +43,15 @@ namespace Project
         }
         public void SetText(string text)
             =>this.text.DisplayedString = text;
+
+        [Obsolete]
         private void OnKeyPressed(object sender, KeyEventArgs e)
         {
             if (InputInformation)
                 InputKey(e.Code);
         }
+
+        [Obsolete]
         private void InputKey(Keyboard.Key key)
         {
             if (key == Keyboard.Key.BackSpace && text.DisplayedString.Length > 0)
@@ -56,6 +62,7 @@ namespace Project
             if (key == Keyboard.Key.Enter)
             {
                 InputInformation = false;
+                OnEndWrite?.Invoke(this);
                 return;
             }
             if(key != Keyboard.Key.BackSpace && text.DisplayedString.Length <= maxLenght)
@@ -75,6 +82,7 @@ namespace Project
         {
             WindowParams.renderWindow.MouseButtonPressed -= GlobalClick;
             WindowParams.renderWindow.KeyPressed -= OnKeyPressed;
+            OnEndWrite = null;
         }
     }
 }
