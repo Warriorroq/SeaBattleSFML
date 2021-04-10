@@ -10,6 +10,8 @@ namespace Project
         private Socket playerSocket = null;
         public string nikName = string.Empty;
         public bool shoot = true;
+        public int lost = 0;
+        public int wins = 0;
         public Player(Socket socket)
         {
             playerSocket = socket;

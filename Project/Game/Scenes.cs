@@ -13,12 +13,12 @@ namespace Project
 
             var button = new Button(new Vector2f(500, 500), new Vector2f(160, 60), "Create room");            
             button.Clicked += Program.game.StartServer;
-            button.Clicked += scene.Destroy<Button>;
+            button.Clicked += scene.DestroyObjects<Button>;
             scene.Add(button);
 
             button = new Button(new Vector2f(500, 600), new Vector2f(160, 60), "Connect room");
             button.Clicked += Program.game.Connect;
-            button.Clicked += scene.Destroy<Button>;
+            button.Clicked += scene.DestroyObjects<Button>;
             scene.Add(button);
             var input = new InputField(new Vector2f(500, 400), new Vector2f(160, 30), 14, $"NickName {Game.random.Next(0, 100)}");
             input.EndWrite += Program.lobby.mainPlayer.SetNickName;
@@ -34,7 +34,7 @@ namespace Project
             button.Clicked += Program.lobby.SetUpConnection;
             button.Clicked += scene.Find<Map>().Move;
             button.Clicked += scene.Find<Chat>().UpdateActive;
-            button.Clicked += scene.Destroy<Button>;
+            button.Clicked += scene.DestroyObjects<Button>;
             button.Clicked += (() => scene.Add(new InputField(new Vector2f(WindowParams.widthWindow - 470, 500), new Vector2f(400, 30), 35, $"message: ")));
             button.Clicked += (() => scene.Find<InputField>().EndWrite += Program.game.UseChat);
             button.Clicked += AddElementsToScene;
@@ -54,7 +54,7 @@ namespace Project
             button.Clicked += Program.lobby.SetUpServer;
             button.Clicked += scene.Find<Chat>().UpdateActive;
             button.Clicked += scene.Find<Map>().Move;
-            button.Clicked += scene.Destroy<Button>;
+            button.Clicked += scene.DestroyObjects<Button>;
             button.Clicked += (() => scene.Add(new InputField(new Vector2f(WindowParams.widthWindow - 470, 500), new Vector2f(400, 30), 35, $"message: ")));
             button.Clicked += (() => scene.Find<InputField>().EndWrite += Program.game.UseChat);
             button.Clicked += AddElementsToScene;
@@ -75,11 +75,11 @@ namespace Project
 
             var button = new Button(new Vector2f(500, 500), new Vector2f(150, 60), "Create auto");
             button.Clicked += map.CreateCells;
-            button.Clicked += scene.Destroy<InputField>;
+            button.Clicked += scene.DestroyObjects<InputField>;
             scene.Add(button);
 
             button = new Button(new Vector2f(80, WindowParams.heightWindow - 80), new Vector2f(120, 40), "main menu");
-            button.Clicked += scene.Destroy<Button>;
+            button.Clicked += scene.DestroyObjects<Button>;
             button.Clicked += Program.game.MainMenu;
             scene.Add(new Chat(new Vector2f(WindowParams.widthWindow - 470, 70)) { IsActive = false});
             scene.Add(button);
@@ -93,12 +93,24 @@ namespace Project
             var button = new Button(new Vector2f(WindowParams.widthWindow - 240, WindowParams.heightWindow - 80), new Vector2f(160, 40), "ready");
             button.Clicked += scene.Find<Chat>().UpdateActive;
             button.Clicked += scene.Find<Map>().Move;
-            button.Clicked += scene.Destroy<Button>;
+            button.Clicked += scene.DestroyObjects<Button>;
             button.Clicked += (() => scene.Add(new InputField(new Vector2f(WindowParams.widthWindow - 470, 500), new Vector2f(400, 30), 35, $"message: ")));
             button.Clicked += (() => scene.Find<InputField>().EndWrite += Program.game.UseChat);
             button.Clicked += AddElementsToScene;
+            button.Clicked += SendInfo;
             scene.Add(button);
             return scene;
+        }
+        private static void SendInfo()
+        {
+            Program.game.SendToChat($"wins: {Program.lobby.mainPlayer.wins} losts:{Program.lobby.mainPlayer.lost}");
+            if(Program.lobby.mainPlayer.wins >= 3 || Program.lobby.mainPlayer.lost >= 3)
+            {
+                var button = new Button(new Vector2f(80, WindowParams.heightWindow - 80), new Vector2f(120, 40), "main menu");
+                button.Clicked += Program.game.scene.DestroyObjects<Button>;
+                button.Clicked += Program.game.MainMenu;
+                Program.game.scene.Add(button);
+            }
         }
     }
 }

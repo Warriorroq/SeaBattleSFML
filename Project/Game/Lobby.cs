@@ -63,7 +63,10 @@ namespace Project
             map.ChangeCellState(data[0], data[1], Cell.celltype.destroyedShip);
             mainPlayer.shoot = true;
             if (data[2] == 0)
+            {
+                mainPlayer.wins++;
                 Program.game.Restart();
+            }
         }
         private void LooseShot(int[] data)
         {
@@ -71,15 +74,26 @@ namespace Project
             map.ChangeCellState(data[0], data[1], Cell.celltype.miss);
             mainPlayer.shoot = false;
         }
+        public void AddBot()
+        {
+            var bot = new Bot(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
+            bot.GetSocket().Connect(ipPoint);
+            Send(CommandConverter.StringToBytes(bot.nikName));
+        }
         public void ConnectPlayers()
         {
             while (serverPlayers.Count == 0)
             {
                 var player = new Player(this.mainPlayer.GetSocket().Accept());
-                serverPlayers.Add(player);
                 var nikName = ListenSocketReceive(player).Item1;
                 player.nikName = CommandConverter.BytesToString(CommandConverter.RemoveBytes(4, nikName.Length - 4, nikName), nikName.Length - 4);
-                player.GetSocket().Send(CommandConverter.StringToBytes(mainPlayer.nikName));
+                if(player.nikName == "__bot")
+                    serverPlayers.Add(new Bot(player.GetSocket()));
+                else
+                {
+                    player.GetSocket().Send(CommandConverter.StringToBytes(mainPlayer.nikName));
+                    serverPlayers.Add(player);
+                }
                 Program.game.SendToChat($"oponennt: {player.nikName}");
             }
         }
@@ -148,8 +162,15 @@ namespace Project
         private void ReSendData(byte[] data, Socket socket)
         {
             foreach (var player in serverPlayers)
-                if(player.GetSocket() != socket)
-                    player.GetSocket().Send(data);
+            {
+                if (player.GetSocket() != socket)
+                {
+                    if (!(player as Bot is null))
+                        (player as Bot).GetData(data);
+                    else
+                        player.GetSocket().Send(data);
+                }
+            }
         }
         private static (byte[], int) ListenSocketReceive(Player player)
         {

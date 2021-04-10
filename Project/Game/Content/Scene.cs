@@ -36,10 +36,16 @@ namespace Project
             removeObjects.ForEach(x => x.Destroy());
             removeObjects.Clear();
         }
-        public void Destroy<T>() where T : GameObject
+        public void DestroyObjects<T>() where T : GameObject
         {
             foreach (var gObject in objects)
                 if (gObject.GetType() == typeof(T))
+                    removeObjects.Add(gObject);
+        }
+        public void DestroyObject(GameObject obj)
+        {
+            foreach (var gObject in objects)
+                if (gObject == obj)
                     removeObjects.Add(gObject);
         }
         public T Find<T>() where T : GameObject
