@@ -43,6 +43,13 @@ namespace Project
         {
             return new int[] {BytesToInt(RemoveBytes(4,4,data)), BytesToInt(RemoveBytes(8, 4, data))};
         }
+        public static int[] BytesToInts(byte[] data)
+        {
+            int[] newData = new int[data.Length / 4];
+            for (int i = 0; i < data.Length / 4 - 1; i++)
+                newData[i] = BytesToInt(RemoveBytes(4 + i * 4, 4, data));
+            return newData;
+        }
         public static byte[] IntToBytes(int num)
             => BitConverter.GetBytes(num);
         public static int BytesToInt(byte[] arr)

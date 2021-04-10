@@ -46,6 +46,11 @@ namespace Project
         {
             scene.Find<Chat>().AddMessage(message);
         }
+        public void Restart()
+        {
+            scene?.Destroy();
+            scene = Scenes.RestartScene();
+        }
         public void StartServer()
         {
             scene?.Destroy();

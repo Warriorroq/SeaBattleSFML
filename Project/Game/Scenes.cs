@@ -86,5 +86,18 @@ namespace Project
             scene.Add(map2);
             return scene;
         }
+        public static Scene RestartScene()
+        {
+            var scene = CreateMapCastScene();
+            var button = new Button(new Vector2f(WindowParams.widthWindow - 240, WindowParams.heightWindow - 80), new Vector2f(160, 40), "ready");
+            button.Clicked += scene.Find<Chat>().UpdateActive;
+            button.Clicked += scene.Find<Map>().Move;
+            button.Clicked += scene.Destroy<Button>;
+            button.Clicked += (() => scene.Add(new InputField(new Vector2f(WindowParams.widthWindow - 470, 500), new Vector2f(400, 30), 35, $"message: ")));
+            button.Clicked += (() => scene.Find<InputField>().EndWrite += Program.game.UseChat);
+            button.Clicked += AddElementsToScene;
+            scene.Add(button);
+            return scene;
+        }
     }
 }

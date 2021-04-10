@@ -36,28 +36,40 @@ namespace Project
             for (int i = 0; i < 4; i++)
                 command[i] = data.Item1[i];
             var commandNum = CommandConverter.BytesToInt(command);
+            var intData = CommandConverter.BytesToInts(data.Item1);
             if (commandNum == 1)
                 Program.game.SendToChat(CommandConverter.BytesToString(data.Item1, data.Item2));
             else if (commandNum == 2)
             {
-                var map = Program.game.scene.FindAll<Map>().Where(x => x.shipChance > 0).ToArray()[0];
-                var shoot = CommandConverter.BytesToShot(data.Item1);
-                map.UpdateCell(shoot[0], shoot[1]);
+                Shoot(intData);
             }
             else if (commandNum == 3)
             {
-                var map = Program.game.scene.FindAll<Map>().Where(x => x.shipChance == 0).ToArray()[0];
-                var shoot = CommandConverter.BytesToShot(data.Item1);
-                map.UpdateCell(shoot[0], shoot[1], Cell.celltype.destroyedShip);
-                mainPlayer.shoot = true;
+                GetShoot(intData);
             }
             else if (commandNum == 4)
             {
-                var map = Program.game.scene.FindAll<Map>().Where(x => x.shipChance == 0).ToArray()[0];
-                var shoot = CommandConverter.BytesToShot(data.Item1);
-                map.UpdateCell(shoot[0], shoot[1], Cell.celltype.miss);
-                mainPlayer.shoot = false;
+                LooseShot(intData);
             }
+        }
+        private void Shoot(int[] data)
+        {
+            var map = Program.game.scene.FindAll<Map>().Where(x => x.shipChance > 0).ToArray()[0];
+            map.UpdateCell(data[0], data[1]);
+        }
+        private void GetShoot(int[] data)
+        {
+            var map = Program.game.scene.FindAll<Map>().Where(x => x.shipChance == 0).ToArray()[0];
+            map.ChangeCellState(data[0], data[1], Cell.celltype.destroyedShip);
+            mainPlayer.shoot = true;
+            if (data[2] == 0)
+                Program.game.Restart();
+        }
+        private void LooseShot(int[] data)
+        {
+            var map = Program.game.scene.FindAll<Map>().Where(x => x.shipChance == 0).ToArray()[0];
+            map.ChangeCellState(data[0], data[1], Cell.celltype.miss);
+            mainPlayer.shoot = false;
         }
         public void ConnectPlayers()
         {
