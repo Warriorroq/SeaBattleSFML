@@ -33,7 +33,7 @@ namespace Project
         public void AddMessage(string message)
         {
             messages.Add($"\n{message}");
-            if (messages.Count * 50 > 500)
+            if (messages.Count * text.CharacterSize > 420 - 5 * text.CharacterSize)
                 messages.Remove(messages[0]);
             UpdateText();
         }

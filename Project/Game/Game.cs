@@ -24,17 +24,13 @@ namespace Project
         {
             MainMenu();
         }
-        public override async void Update()
+        public override void Update()
         {
-            await Task.Run(() => Program.lobby.UpdateConnection());
+            Program.lobby.UpdateConnection();
         }
         public void UseChat(InputField field)
         {
-            Program.lobby.Send($"{Program.lobby.mainSocket.nikName}: {field.Text}");
-        }
-        public void UseChat(string field)
-        {
-            Program.lobby.Send($"{field}");
+            Program.lobby.Send(CommandConverter.StringToBytes($"{Program.lobby.mainPlayer.nikName}: {field.Text}"));
         }
         public override void Draw()
         {
@@ -59,6 +55,7 @@ namespace Project
         {
             scene?.Destroy();
             scene = Scenes.CreateConnectionLobby();
+            Program.lobby.mainPlayer.shoot = false;
         }
         private void ShowFPS()
             => Debug($"FPS: {(1 / Time.deltaTime):0.0}");

@@ -1,15 +1,16 @@
 ﻿using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using System;
+
 namespace Project
 {
     public class Button : GameObject
     {
         public Text text = null;
-        public bool Clicked = false;
+        public bool Pressed = false;
         private Shape shape = null;
-        public event OnClick OnClicked;
-        public delegate void OnClick();
+        public event Action Clicked;
         public Button(Vector2f position, Vector2f size, string text)
         {
             shape = new RectangleShape(size)
@@ -35,13 +36,13 @@ namespace Project
             Vector2f mappedpos = WindowParams.renderWindow.MapPixelToCoords(new Vector2i(e.X, e.Y));
             if (shape.GetGlobalBounds().Contains(mappedpos.X, mappedpos.Y) && IsActive)
             {
-                OnClicked?.Invoke();
-                Clicked = true;
+                Clicked?.Invoke();
+                Pressed = true;
             }
         }
         private void GlobalRelease(object sender, MouseButtonEventArgs e)
         {
-            Clicked = false;
+            Pressed = false;
         }
         public override void Draw()
         {
@@ -52,7 +53,7 @@ namespace Project
         {
             WindowParams.renderWindow.MouseButtonPressed -= GlobalClick;
             WindowParams.renderWindow.MouseButtonReleased -= GlobalRelease;
-            OnClicked = null;
+            Clicked = null;
         }
     }
 }

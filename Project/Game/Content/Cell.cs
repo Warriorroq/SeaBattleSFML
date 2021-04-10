@@ -20,10 +20,10 @@ namespace Project
         public event OnClick OnClicked;
         public delegate void OnClick(Cell cell);
         public celltype currentType = celltype.water;
-        public Vector2f Position
+        public Vector2i Position
         {
             get
-                => shape.Position;
+                => (Vector2i)shape.Position;
         }
         public Shape GetShape {
             get 
@@ -52,6 +52,19 @@ namespace Project
             Vector2f mappedpos = WindowParams.renderWindow.MapPixelToCoords(new Vector2i(e.X, e.Y));
             if (shape.GetGlobalBounds().Contains(mappedpos.X, mappedpos.Y) && IsActive)
                 OnClicked?.Invoke(this);
+        }
+        public void ChangeType(celltype cell)
+        {
+            if (cell == celltype.destroyedShip)
+            {
+                shape.FillColor = new Color(Color.White.R, 0, 0, (byte)(Color.White.A - 75));
+                shape.Texture = GameTextures.ship;
+            }
+            if (cell == celltype.miss)
+            {
+                shape.FillColor = new Color(0, Color.White.G, 0, (byte)(Color.White.A - 75));
+            }
+            currentType = cell;
         }
         public override void Draw()
             =>WindowParams.renderWindow.Draw(shape);

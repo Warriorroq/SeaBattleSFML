@@ -9,6 +9,7 @@ namespace Project
     {
         private Socket playerSocket = null;
         public string nikName = "";
+        public bool shoot = true;
         public Player(Socket socket)
         {
             playerSocket = socket;
