@@ -85,7 +85,10 @@ namespace Project
                 health--;
                 shot = CommandConverter.ShotToBytes(3, new int[] { x, y , health});
                 if (health == 0)
+                {
+                    Program.lobby.mainPlayer.lost++;
                     Program.game.Restart();
+                }
                 Program.lobby.mainPlayer.shoot = false;
             }
             else if (cells[mapY, mapX].currentType == Cell.celltype.water)
