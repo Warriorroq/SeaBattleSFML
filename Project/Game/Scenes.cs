@@ -22,6 +22,7 @@ namespace Project
             scene.Add(button);
             var input = new InputField(new Vector2f(500, 400), new Vector2f(160, 30), 14, $"NickName {Game.random.Next(0, 100)}");
             input.EndWrite += Program.lobby.mainPlayer.SetNickName;
+            Program.lobby.mainPlayer.nikName = input.Text;
             scene.Add(input);
 
             return scene;

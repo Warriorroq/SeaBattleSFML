@@ -8,7 +8,7 @@ namespace Project
     public class Player
     {
         private Socket playerSocket = null;
-        public string nikName = "";
+        public string nikName = string.Empty;
         public bool shoot = true;
         public Player(Socket socket)
         {

@@ -77,7 +77,10 @@ namespace Project
             {
                 var player = new Player(this.mainPlayer.GetSocket().Accept());
                 serverPlayers.Add(player);
-                Program.game.SendToChat($"Connected {player.nikName}");
+                var nikName = ListenSocketReceive(player).Item1;
+                player.nikName = CommandConverter.BytesToString(CommandConverter.RemoveBytes(4, nikName.Length - 4, nikName), nikName.Length - 4);
+                player.GetSocket().Send(CommandConverter.StringToBytes(mainPlayer.nikName));
+                Program.game.SendToChat($"oponennt: {player.nikName}");
             }
         }
         public void SetUpConnection()
@@ -85,6 +88,10 @@ namespace Project
             try
             {
                 mainPlayer.GetSocket().Connect(ipPoint);
+                Send(CommandConverter.StringToBytes(mainPlayer.nikName));
+                var nikName = ListenSocketReceive(mainPlayer).Item1;
+                var oponNikName = CommandConverter.BytesToString(CommandConverter.RemoveBytes(4, nikName.Length - 4, nikName), nikName.Length - 4);
+                Program.game.SendToChat($"oponennt: {oponNikName}");
                 Console.WriteLine("Подключилось к серверу...");
             }
             catch (Exception ex)
@@ -124,7 +131,7 @@ namespace Project
             {
                 if (socket.GetSocket().Available > 0)
                 {
-                    var data = ListenSocketReceive(socket.GetSocket());
+                    var data = ListenSocketReceive(socket);
                     ReadMessage(data);
                     ReSendData(data.Item1, socket.GetSocket());
                 }
@@ -134,7 +141,7 @@ namespace Project
         {
             if (mainPlayer.GetSocket().Available > 0)
             {
-                var data = ListenSocketReceive(mainPlayer.GetSocket());
+                var data = ListenSocketReceive(mainPlayer);
                 ReadMessage(data);
             }
         }
@@ -144,16 +151,16 @@ namespace Project
                 if(player.GetSocket() != socket)
                     player.GetSocket().Send(data);
         }
-        private static (byte[], int) ListenSocketReceive(Socket socket)
+        private static (byte[], int) ListenSocketReceive(Player player)
         {
 
             byte[] data = new byte[512];
             int bytes = 0;
             do
             {
-                bytes = socket.Receive(data, data.Length, 0);
+                bytes = player.GetSocket().Receive(data, data.Length, 0);
             }
-            while (socket.Available > 0);
+            while (player.GetSocket().Available > 0);
             return (data, bytes);
         }
     }
