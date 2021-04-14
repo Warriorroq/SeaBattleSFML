@@ -8,6 +8,7 @@ namespace Project
     public class Player
     {
         private Socket playerSocket = null;
+        public PlayerData data;
         public string nikName = string.Empty;
         public bool shoot = true;
         public int lost = 0;
@@ -20,7 +21,7 @@ namespace Project
             => playerSocket;
         public void SetNickName(InputField nik)
         {
-            nikName += nik.Text;
+            nikName = nik.Text;
             Console.WriteLine(nikName);
         }
     }

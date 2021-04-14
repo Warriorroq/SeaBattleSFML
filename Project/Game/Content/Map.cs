@@ -88,6 +88,7 @@ namespace Project
                 {
                     Program.lobby.mainPlayer.lost++;
                     Program.game.Restart();
+                    Program.lobby.ChangeMMA();
                 }
                 Program.lobby.mainPlayer.shoot = false;
             }

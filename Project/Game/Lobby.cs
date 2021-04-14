@@ -14,6 +14,7 @@ namespace Project
         public Player mainPlayer = new Player(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
         private IPEndPoint ipPoint = new IPEndPoint(IPAddress.Parse(address), port);
         private List<Player> serverPlayers = null;
+        public PlayerData oponnet;
         public async void SetUpServer()
         {
             serverPlayers = new List<Player>();
@@ -51,6 +52,15 @@ namespace Project
             {
                 LooseShot(intData);
             }
+            else if (commandNum == 5)
+            {
+                ReadStatsData(intData);
+            }
+        }
+        private void ReadStatsData(int[] data)
+        {
+            oponnet = new PlayerData(data[0], data[1], data[2]);
+            Program.game.scene.Find<Chat>().AddMessage($"mma: {data[0]} loses:{data[1]} wins:{data[2]}");
         }
         private void Shoot(int[] data)
         {
@@ -78,7 +88,6 @@ namespace Project
         {
             var bot = new Bot(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
             bot.GetSocket().Connect(ipPoint);
-            Send(CommandConverter.StringToBytes(bot.nikName));
         }
         public void ConnectPlayers()
         {
@@ -93,6 +102,7 @@ namespace Project
                 {
                     player.GetSocket().Send(CommandConverter.StringToBytes(mainPlayer.nikName));
                     serverPlayers.Add(player);
+                    Send(CommandConverter.ShotToBytes(5, new int[] { mainPlayer.data.mma, mainPlayer.data.wins, mainPlayer.data.loses }));
                 }
                 Program.game.SendToChat($"oponennt: {player.nikName}");
             }
@@ -106,6 +116,7 @@ namespace Project
                 var nikName = ListenSocketReceive(mainPlayer).Item1;
                 var oponNikName = CommandConverter.BytesToString(CommandConverter.RemoveBytes(4, nikName.Length - 4, nikName), nikName.Length - 4);
                 Program.game.SendToChat($"oponennt: {oponNikName}");
+                Send(CommandConverter.ShotToBytes(5, new int[] { mainPlayer.data.mma, mainPlayer.data.wins, mainPlayer.data.loses }));
                 Console.WriteLine("Подключилось к серверу...");
             }
             catch (Exception ex)
@@ -183,6 +194,34 @@ namespace Project
             }
             while (player.GetSocket().Available > 0);
             return (data, bytes);
+        }
+        public void ChangeMMA()
+        {
+            if (mainPlayer.wins == 3)
+            {
+                mainPlayer.data.wins++;
+                var difference = oponnet.mma - mainPlayer.data.mma;
+                if (difference < -15)
+                    mainPlayer.data.mma += 1;
+                else if (difference > 15)
+                    mainPlayer.data.mma += 7;
+                else
+                    mainPlayer.data.mma += 5;
+            }
+            else if (mainPlayer.lost == 3)
+            {
+                mainPlayer.data.loses++;
+                var difference = oponnet.mma - mainPlayer.data.mma;
+                if (difference < -15)
+                    mainPlayer.data.mma -= 7;
+                else if (difference > 15)
+                    mainPlayer.data.mma -= 1;
+                else
+                    mainPlayer.data.mma -= 4;
+            }
+            JsonReader.CreateJson(mainPlayer.data, mainPlayer.nikName);
+            Program.game.scene.Find<Chat>().AddMessage($"new stats is: \n" +
+                $"mma: {mainPlayer.data.mma} loses:{mainPlayer.data.loses} wins:{mainPlayer.data.wins}");
         }
     }
 }

@@ -22,6 +22,7 @@ namespace Project
             scene.Add(button);
             var input = new InputField(new Vector2f(500, 400), new Vector2f(160, 30), 14, $"NickName {Game.random.Next(0, 100)}");
             input.EndWrite += Program.lobby.mainPlayer.SetNickName;
+            input.EndWrite += (x => Program.lobby.mainPlayer.data = JsonReader.ReadJson(x.Text));
             Program.lobby.mainPlayer.nikName = input.Text;
             scene.Add(input);
 
@@ -45,6 +46,8 @@ namespace Project
         {
             var button = new Button(new Vector2f(240, WindowParams.heightWindow - 80), new Vector2f(160, 40), "show map");
             Program.game.scene.Add(button);
+            var data = Program.lobby.mainPlayer.data;
+            Program.game.scene.Find<Chat>().AddMessage($"mma: {data.mma} loses:{data.loses} wins:{data.wins}");
             button.Clicked += (() => Program.game.scene.FindAll<Map>().ForEach(x => x.UpdateActive()));
         }
         public static Scene CreateServerLobby()
@@ -103,12 +106,16 @@ namespace Project
         }
         private static void SendInfo()
         {
-            Program.game.SendToChat($"wins: {Program.lobby.mainPlayer.wins} losts:{Program.lobby.mainPlayer.lost}");
-            if(Program.lobby.mainPlayer.wins >= 3 || Program.lobby.mainPlayer.lost >= 3)
+            var player = Program.lobby.mainPlayer;
+            Program.game.SendToChat($"wins: {player.wins} losts:{player.lost}");
+            if(player.wins >= 3 || player.lost >= 3)
             {
+                if(Math.Abs(player.wins) == 3)
+                    Program.lobby.ChangeMMA();
                 var button = new Button(new Vector2f(80, WindowParams.heightWindow - 80), new Vector2f(120, 40), "main menu");
                 button.Clicked += Program.game.scene.DestroyObjects<Button>;
                 button.Clicked += Program.game.MainMenu;
+                button.Clicked += (() => JsonReader.CreateJson(player.data, player.nikName));
                 Program.game.scene.Add(button);
             }
         }
